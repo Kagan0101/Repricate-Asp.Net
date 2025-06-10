@@ -1,6 +1,27 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Mark all web assets as vendored (completely ignore in language stats)
 *.html linguist-vendored=true
-wwwroot/* linguist-vendored=true
+*.htm linguist-vendored=true
+*.css linguist-vendored=true
+*.js linguist-vendored=true
+*.json linguist-vendored=true
+*.map linguist-vendored=true
+
+# Mark entire wwwroot directory as vendored
+wwwroot/** linguist-vendored=true
+
+# Mark common static/generated folders as vendored
+bin/** linguist-vendored=true
+obj/** linguist-vendored=true
+node_modules/** linguist-vendored=true
+dist/** linguist-vendored=true
+build/** linguist-vendored=true
+
+# Explicitly define C# as the primary language
 *.cs linguist-language=C#
 *.razor linguist-language=C#
+*.cshtml linguist-language=C#
+*.csproj linguist-language=XML
+*.sln linguist-language=C#
