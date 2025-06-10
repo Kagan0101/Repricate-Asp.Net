@@ -1,0 +1,765 @@
+﻿
+@model List<Recipe>
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarif Defteri - Lezzetli Tarifler</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #ffd93d;
+            --accent-color: #6bcf7f;
+            --warm-orange: #ff8c42;
+            --soft-pink: #ffaaa5;
+            --cream: #fff8e7;
+            --dark-text: #2c3e50;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #fff 50%, var(--cream) 100%);
+            min-height: 100vh;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--warm-orange));
+            padding: 40px 0;
+            border-radius: 0 0 50px 50px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .header-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            border: none;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .recipe-image {
+            height: 200px;
+            background: linear-gradient(45deg, var(--soft-pink), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 20%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+        .recipe-content {
+            padding: 25px;
+        }
+
+        .recipe-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .recipe-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .recipe-tag {
+            background: linear-gradient(45deg, var(--accent-color), #4ecdc4);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .difficulty-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .difficulty-easy {
+            background: linear-gradient(45deg, var(--accent-color), #6bcf7f);
+            color: white;
+        }
+
+        .difficulty-medium {
+            background: linear-gradient(45deg, var(--secondary-color), #ffd93d);
+            color: var(--dark-text);
+        }
+
+        .difficulty-hard {
+            background: linear-gradient(45deg, var(--primary-color), #ff6b6b);
+            color: white;
+        }
+
+        .rating-stars {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .btn-recipe {
+            background: linear-gradient(45deg, var(--primary-color), var(--warm-orange));
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-recipe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            color: white;
+        }
+
+        .btn-add-recipe {
+            background: linear-gradient(45deg, var(--accent-color), #4ecdc4);
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 25px rgba(107, 207, 127, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .btn-add-recipe:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(107, 207, 127, 0.6);
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .search-input {
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .filter-btn {
+            background: #f8f9fa;
+            border: 2px solid #eee;
+            border-radius: 20px;
+            padding: 8px 18px;
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: linear-gradient(45deg, var(--primary-color), var(--warm-orange));
+            border-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .modal-custom .modal-content {
+            border-radius: 20px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .modal-custom .modal-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--warm-orange));
+            color: white;
+            border: none;
+            padding: 20px 30px;
+        }
+
+        .modal-custom .modal-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+        }
+
+        .form-control-custom {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+        }
+
+        .ingredients-list, .steps-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        .ingredient-item, .step-item {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .remove-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        .category-icons {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+
+        .loading-animation {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-btn:hover, .favorite-btn.active {
+            background: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="container">
+            <h1 class="header-title">🍰 Tarif Defteri</h1>
+            <p class="header-subtitle">En sevdiğiniz tarifleri keşfedin ve paylaşın</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: var(--primary-color);">124</div>
+                        <div class="stat-label">Toplam Tarif</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: var(--accent-color);">89</div>
+                        <div class="stat-label">Tatlı Tarifleri</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: var(--warm-orange);">35</div>
+                        <div class="stat-label">Ana Yemek</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-item">
+                        <div class="stat-number" style="color: var(--secondary-color);">42</div>
+                        <div class="stat-label">Favori Tarifler</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" style="background: var(--primary-color); color: white; border: none;">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control search-input" placeholder="Tarif ara... (pasta, çorba, et yemeği)" id="searchInput">
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <select class="form-select search-input" id="sortSelect">
+                        <option value="newest">En Yeni</option>
+                        <option value="popular">En Popüler</option>
+                        <option value="rating">En Yüksek Puan</option>
+                        <option value="easiest">En Kolay</option>
+                        <option value="fastest">En Hızlı</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-utensils category-icons"></i>Tümü
+                </button>
+                <button class="filter-btn" data-filter="dessert">
+                    <i class="fas fa-birthday-cake category-icons"></i>Tatlılar
+                </button>
+                <button class="filter-btn" data-filter="main">
+                    <i class="fas fa-drumstick-bite category-icons"></i>Ana Yemek
+                </button>
+                <button class="filter-btn" data-filter="soup">
+                    <i class="fas fa-bowl-food category-icons"></i>Çorbalar
+                </button>
+                <button class="filter-btn" data-filter="salad">
+                    <i class="fas fa-leaf category-icons"></i>Salatalar
+                </button>
+                <button class="filter-btn" data-filter="drink">
+                    <i class="fas fa-glass-water category-icons"></i>İçecekler
+                </button>
+                <button class="filter-btn" data-filter="breakfast">
+                    <i class="fas fa-mug-saucer category-icons"></i>Kahvaltı
+                </button>
+            </div>
+        </div>
+
+        <!-- Recipes Grid -->
+        <div class="row" id="recipesContainer">
+            <!-- Recipe Card 1 -->
+            @foreach (var recipe in Model)
+            {
+                <div class="col-lg-4 col-md-6 recipe-item" data-category="dessert"></div>
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                        <i class="fas fa-birthday-cake"></i>
+                        <button class="favorite-btn" onclick="toggleFavorite(this)">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="recipe-content">
+                        <h3 class="recipe-title">@recipe.Name</h3>
+                        <div class="recipe-meta">
+                            <span><i class="far fa-clock"></i> 45 dk</span>
+                            <span><i class="fas fa-users"></i> 8 kişilik</span>
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span style="color: #666; margin-left: 5px;">(4.8)</span>
+                            </div>
+                        </div>
+                        <div class="recipe-tags">
+                            <span class="recipe-tag">@recipe.Category</span>
+                            <span class="recipe-tag">Çikolata</span>
+                            <span class="recipe-tag">Fırın</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="difficulty-badge difficulty-easy">@recipe.Level</span>
+                            <a href="#" class="btn-recipe" onclick="viewRecipe(1)">Tarifi Gör</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- Load More Button -->
+        <div class="text-center mt-4">
+            <button class="btn-recipe" onclick="loadMoreRecipes()" style="padding: 15px 40px; font-size: 1.1rem;">
+                <i class="fas fa-plus me-2"></i>Daha Fazla Tarif Yükle
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Recipe Button -->
+    <button class="btn-add-recipe" data-bs-toggle="modal" data-bs-target="#addRecipeModal" title="Yeni Tarif Ekle">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Add Recipe Modal -->
+    <div class="modal fade modal-custom" id="addRecipeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">✨ Yeni Tarif Ekle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addRecipeForm">
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Tarif Adı <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-custom" name="recipeName" placeholder="Örn: Çikolatalı Brownie" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                                <select class="form-select form-control-custom" name="category" required>
+                                    <option value="">Seçiniz</option>
+                                    <option value="dessert">🍰 Tatlılar</option>
+                                    <option value="main">🍖 Ana Yemek</option>
+                                    <option value="soup">🍲 Çorbalar</option>
+                                    <option value="salad">🥗 Salatalar</option>
+                                    <option value="drink">🥤 İçecekler</option>
+                                    <option value="breakfast">☕ Kahvaltı</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Hazırlama Süresi</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control form-control-custom" name="prepTime" placeholder="30">
+                                    <span class="input-group-text">dakika</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Kaç Kişilik</label>
+                                <input type="number" class="form-control form-control-custom" name="servings" placeholder="4">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Zorluk Seviyesi</label>
+                                <select class="form-select form-control-custom" name="difficulty">
+                                    <option value="easy">😊 Kolay</option>
+                                    <option value="medium">😐 Orta</option>
+                                    <option value="hard">😰 Zor</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kısa Açıklama</label>
+                            <textarea class="form-control form-control-custom" name="description" rows="2" placeholder="Bu tarif hakkında kısa bir açıklama yazın..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Malzemeler <span class="text-danger">*</span></label>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control form-control-custom" id="ingredientInput" placeholder="Malzeme adı (örn: 2 su bardağı un)">
+                                <button type="button" class="btn btn-outline-secondary" onclick="addIngredient()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="ingredients-list" id="ingredientsList">
+                                <div class="text-muted text-center py-3">Henüz malzeme eklenmedi</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Yapılış Adımları <span class="text-danger">*</span></label>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control form-control-custom" id="stepInput" placeholder="Yapılış adımını yazın...">
+                                <button type="button" class="btn btn-outline-secondary" onclick="addStep()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="steps-list" id="stepsList">
+                                <div class="text-muted text-center py-3">Henüz adım eklenmedi</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Etiketler</label>
+                            <input type="text" class="form-control form-control-custom" name="tags" placeholder="Virgülle ayırın (örn: çikolata, fırın, kolay)">
+                            <small class="text-muted">Tarifinizi daha kolay bulunabilir yapmak için etiketler ekleyin</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Özel Notlar</label>
+                            <textarea class="form-control form-control-custom" name="notes" rows="3" placeholder="Tarifiniz için özel ipuçları, alternatif malzemeler veya önemli notlar..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-recipe" onclick="saveRecipe()" style="padding: 10px 30px;">
+                        <i class="fas fa-save me-2"></i>Tarifi Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Recipe Modal -->
+    <div class="modal fade modal-custom" id="viewRecipeModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🍰 Çikolatalı Brownie</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Recipe Image and Info -->
+                        <div class="col-lg-4">
+                            <div class="recipe-image mb-3" style="height: 250px; border-radius: 15px;">
+                                <i class="fas fa-birthday-cake"></i>
+                            </div>
+                            
+                            <div class="card" style="border-radius: 15px; border: none; background: #f8f9fa;">
+                                <div class="card-body">
+                                    <h6>📊 Tarif Bilgileri</h6>
+                                    <hr>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span><i class="far fa-clock text-primary"></i> Süre:</span>
+                                        <strong>45 dakika</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span><i class="fas fa-users text-success"></i> Porsiyon:</span>
+                                        <strong>8 kişilik</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span><i class="fas fa-signal text-warning"></i> Zorluk:</span>
+                                        <span class="difficulty-badge difficulty-easy">Kolay</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span><i class="fas fa-star text-warning"></i> Puan:</span>
+                                        <div class="rating-stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span style="color: #666;">(4.8)</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-recipe" onclick="toggleFavoriteRecipe()">
+                                            <i class="far fa-heart me-2"></i>Favorilere Ekle
+                                        </button>
+                                        <button class="btn btn-outline-primary" onclick="shareRecipe()">
+                                            <i class="fas fa-share me-2"></i>Paylaş
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recipe Content -->
+                        <div class="col-lg-8">
+                            <div class="mb-4">
+                                <h6>📝 Açıklama</h6>
+                                <p class="text-muted">Bu enfes çikolatalı brownie tarifi, yumuşak dokusu ve yoğun çikolata tadıyla damak tadınızı şenlendirecek. Kolay yapımı sayesinde her seviyedeki aşçının rahatlıkla hazırlayabileceği nefis bir tatlı.</p>
+                                
+                                <div class="recipe-tags">
+                                    <span class="recipe-tag">Tatlı</span>
+                                    <span class="recipe-tag">Çikolata</span>
+                                    <span class="recipe-tag">Fırın</span>
+                                    <span class="recipe-tag">Kolay</span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>🛒 Malzemeler</h6>
+                                    <div class="ingredients-list" style="max-height: 300px;">
+                                        <div class="ingredient-item">
+                                            <span>• 200g bitter çikolata</span>
+                                        </div>
+                                        <div class="ingredient-item">
+                                            <span>• 150g tereyağı</span>
+                                        </div>
+                                        <div class="ingredient-item">
+                                            <span>• 200g pudra şekeri</span>
+                                        </div>
+                                        <div class="ingredient-item">
+                                            <span>• 3 adet yumurta</span>
+                                        </div>
+                                        <div class="ingredient-item">
+                                            <span>• 100g un</span>
+                                        </div>
+                                        <div class="ingredient-item">
+                                            <span>• 30g kakao</span>
+                                        </div>
+                                        <div class="ingredient-item">
+                                            <span>• 1 tsp vanilya</span>
+                                        </div>
+                                        <div class="ingredient-item">
+                                            <span>• 1/2 tsp tuz</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6>👩‍🍳 Yapılışı</h6>
+                                    <div class="steps-list" style="max-height: 300px;">
+                                        <div class="step-item">
+                                            <span><strong>1.</strong> Fırını 180°C'ye ısıtın ve kalıbı yağlayın.</span>
+                                        </div>
+                                        <div class="step-item">
+                                            <span><strong>2.</strong> Çikolatayı tereyağı ile benmari usulü eritin.</span>
+                                        </div>
+                                        <div class="step-item">
+                                            <span><strong>3.</strong> Yumurtaları şekerle iyice çırpın.</span>
+                                        </div>
+                                        <div class="step-item">
+                                            <span><strong>4.</strong> Eriyen çikolatayı yumurta karışımına ekleyin.</span>
+                                        </div>
+                                        <div class="step-item">
+                                            <span><strong>5.</strong> Un, kakao ve tuzu eleyerek ekleyin.</span>
+                                        </div>
+                                        <div class="step-item">
+                                            <span><strong>6.</strong> Karışımı kalıba dökün ve 25-30 dk pişirin.</span>
+                                        </div>
+                                        <div class="step-item">
+                                            <span><strong>7.</strong> Soğuttuktan sonra dilimleyip servis edin.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <h6>💡 Özel Notlar</h6>
+                                <div class="alert alert-info" style="border-radius: 15px; border: none;">
+                                    <i class="fas fa-lightbulb me-2"></i>
+                                    <strong>İpucu:</strong> Brownie'nin ortası biraz nemli kalmalı, bu normal! Çok pişirmeyin yoksa sert olur. Üzerine vanilyalı dondurma ile servis edebilirsiniz.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-warning me-2" onclick="editRecipe(1)">
+                        <i class="fas fa-edit me-2"></i>Düzenle
+                    </button>
+                    <button type="button" class="btn btn-recipe" onclick="startCooking()">
+                        <i class="fas fa-play me-2"></i>Pişirmeye Başla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

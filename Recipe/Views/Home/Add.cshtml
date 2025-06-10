@@ -1,0 +1,189 @@
+@model Recipe
+
+@{
+    ViewData["Title"] = "Yeni Tarif Ekle";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Yemek Ekleme</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/add.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-utensils me-2"></i>Yemek Ekleme Paneli</h1>
+                    <p>Yeni tarifler ekleyerek koleksiyonunuzu genişletin</p>
+                </div>
+                <div>
+                    <a asp-action="Index" class="btn btn-light">
+                        <i class="fas fa-list me-2"></i>Tüm Tarifler
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2><i class="fas fa-plus-circle me-2"></i>Yeni Tarif Ekle</h2>
+                    </div>
+                    
+                    <div class="form-body">
+                        <!-- Success/Error Messages -->
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show">
+                                @TempData["SuccessMessage"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                @TempData["ErrorMessage"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <!-- ✅ DOĞRU FORM -->
+                        <form asp-action="Add" asp-controller="Home" method="post" novalidate>
+                            @Html.AntiForgeryToken()
+                            
+                            <!-- Basic Information Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-info-circle text-primary"></i>
+                                    Temel Bilgiler
+                                </h3>
+                                
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label asp-for="Name" class="form-label">Tarif Adı <span class="text-danger">*</span></label>
+                                        <input asp-for="Name" class="form-control" 
+                                               placeholder="Örn: Çikolatalı Brownie" required maxlength="200">
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                    
+                                    <div class="col-md-4 mb-3">
+                                        <label asp-for="Category" class="form-label">Kategori <span class="text-danger">*</span></label>
+                                        <select asp-for="Category" class="form-select" required>
+                                            <option value="">Kategori Seçin</option>
+                                            <option value="Tatlılar">🍰 Tatlılar</option>
+                                            <option value="Ana Yemekler">🍖 Ana Yemekler</option>
+                                            <option value="Çorbalar">🍲 Çorbalar</option>
+                                            <option value="Salatalar">🥗 Salatalar</option>
+                                            <option value="İçecekler">🥤 İçecekler</option>
+                                            <option value="Kahvaltı">☕ Kahvaltı</option>
+                                            <option value="Aperatifler">🥨 Aperatifler</option>
+                                            <option value="Mezeler">🫘 Mezeler</option>
+                                        </select>
+                                        <span asp-validation-for="Category" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label asp-for="Level" class="form-label">Zorluk Seviyesi <span class="text-danger">*</span></label>
+                                        <select asp-for="Level" class="form-select" required>
+                                            <option value="">Seviye Seçin</option>
+                                            <option value="Kolay">😊 Kolay</option>
+                                            <option value="Orta">😐 Orta</option>
+                                            <option value="Zor">😰 Zor</option>
+                                        </select>
+                                        <span asp-validation-for="Level" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Description" class="form-label">Açıklama</label>
+                                    <textarea asp-for="Description" class="form-control" rows="3" 
+                                              placeholder="Bu tarif hakkında kısa bir açıklama yazın..." maxlength="500"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Image Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-image text-primary"></i>
+                                    Görsel
+                                </h3>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="ImageUrl" class="form-label">Görsel URL</label>
+                                    <input asp-for="ImageUrl" class="form-control" 
+                                           placeholder="https://example.com/image.jpg">
+                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                    <small class="text-muted">Görsel URL'si girin</small>
+                                </div>
+                            </div>
+
+                            <!-- Ingredients Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-list-ul text-primary"></i>
+                                    Malzemeler
+                                </h3>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="Ingredients" class="form-label">Malzemeler <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Ingredients" class="form-control" rows="6" 
+                                              placeholder="Her satıra bir malzeme yazın...&#10;• 2 su bardağı un&#10;• 3 yumurta&#10;• 1 su bardağı süt&#10;• 1 çay kaşığı tuz" required></textarea>
+                                    <span asp-validation-for="Ingredients" class="text-danger"></span>
+                                    <small class="text-muted">Her satıra bir malzeme yazın</small>
+                                </div>
+                            </div>
+
+                            <!-- Instructions Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-list-ol text-primary"></i>
+                                    Yapılış Adımları
+                                </h3>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="Instructions" class="form-label">Yapılış <span class="text-danger">*</span></label>
+                                    <textarea asp-for="Instructions" class="form-control" rows="8" 
+                                              placeholder="Yapılış adımlarını detaylı olarak yazın...&#10;1. Fırını 180°C'ye ısıtın.&#10;2. Malzemeleri karıştırın.&#10;3. Karışımı kalıba dökün.&#10;4. 25-30 dakika pişirin." required></textarea>
+                                    <span asp-validation-for="Instructions" class="text-danger"></span>
+                                    <small class="text-muted">Adımları numaralayarak yazın</small>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="d-flex justify-content-between align-items-center pt-3">
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Geri Dön
+                                </a>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Tarifi Kaydet
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/add.js"></script>
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+</body>
+</html>
