@@ -3,3 +3,5 @@
 *.html linguist-detectable=false
 wwwroot/*.js linguist-detectable=false
 wwwroot/*.css linguist-detectable=false
+*.cs linguist-language=C#
+*.razor linguist-language=C#
